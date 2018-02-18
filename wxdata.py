@@ -9,6 +9,7 @@ def model(select_model, date, cycle):
 
     model_urls = {
         'GFS': 'gfs_0p25/gfs' + date + '/gfs_0p25_' + cycle + 'z',
+        'GFSH': 'gfs_0p25_1hr' + '/gfs' + date + '/gfs_0p25_1hr_' + cycle + 'z',
         'ARW': 'hiresw/hiresw' + date + '/hiresw_conusarw_' + cycle + 'z',
         'NMM': 'hiresw/hiresw' + date + '/hiresw_conusnmmb_' + cycle + 'z',
         'HRRR': 'hrrr/hrrr' + date + '/hrrr_sfc_' + cycle + 'z',
@@ -32,6 +33,11 @@ def closefile(netcdf):
     '''Close netcdf file'''
     netcdf.close()
 
+def getnearpos(array, value):
+    '''Retrieve nearest index value from lat/lon'''
+    idx = (np.abs(array - value)).argmin()
+    return idx
+
 def geodomain(netcdf, coords):
     '''Calculate geographical domain'''
     lats = netcdf.variables['lat'][:]
@@ -41,20 +47,15 @@ def geodomain(netcdf, coords):
     llon = coords[2]
     rlon = coords[3]
 
-    def getnearpos(array, value):
-        '''Retrieve nearest index value from lat/lon'''
-        idx = (np.abs(array - value)).argmin()
-        return idx
-
     llat_idx = getnearpos(lats, llat)
     ulat_idx = getnearpos(lats, ulat)
     llon_idx = getnearpos(lons, llon)
     rlon_idx = getnearpos(lons, rlon)
 
-    lats = lats[llat_idx : ulat_idx]
-    lons = lons[llon_idx : rlon_idx]
+    lats_domain = lats[llat_idx : ulat_idx]
+    lons_domain = lons[llon_idx : rlon_idx]
 
-    return lats, lons, llat_idx, ulat_idx, llon_idx, rlon_idx
+    return lats_domain, lons_domain, llat_idx, ulat_idx, llon_idx, rlon_idx
 
 def time(netcdf):
     '''Retrieve valid forecast times'''
@@ -103,10 +104,10 @@ MIDWEST = Geography(37.0, 50.0, -105.0, -82.0)
 WISCONSIN_GLOBAL = Geography(41.5, 47.5, 266.0, 273.7)
 MIDWEST_GLOBAL = Geography(37.0, 50.0, 255.0, 278.0)
 
-AREA = WISCONSIN
-FILENAME = model('RAP', '20180120', '06')
-CONTENTS = openfile(FILENAME)
-DOMAIN = geodomain(CONTENTS, AREA.coords)
-TIME = time(CONTENTS)
+# AREA = WISCONSIN
+# FILENAME = model('RAP', '20180120', '06')
+# CONTENTS = openfile(FILENAME)
+# DOMAIN = geodomain(CONTENTS, AREA.coords)
+# TIME = time(CONTENTS)
 
-closefile(CONTENTS)
+# closefile(CONTENTS)

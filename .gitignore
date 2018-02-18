@@ -1,0 +1,15 @@
+*.pyc
+*.png
+.DS_Store
+examples/
+gfs/
+href/
+hrrr/
+mrms/
+nam-hires/
+namhires/
+ncdump/
+rap/
+snow/
+wavewatch/
+.ipynb_checkpoints/
